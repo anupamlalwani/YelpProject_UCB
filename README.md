@@ -1,6 +1,30 @@
 
+### Yelp Review Analysis by Angela Shane and Anupam Lalwani
+
+#### Analysis topic:
+What is the correlation between Yelp reviews and closed restaurants?
+
+Assumptions:
+
+The general assumption before looking at data were:
+- High correlation between closed restraunts and low ratings
+- High negative vader Sentiment score for restraunt reviews
+
+### Data Retrieval:
+
+Yelp supports developers and students trying to do research on Yelp data with Yelp Fusion API. However, the Yelp has put limits to number of restaurants and reviews one can pull from its API.
+
+We had to take longer route and retrieve data using data scrapping. 
+
+The first step was to get URLs of closed restaurants listed on Yelp. The code for scrapping the data from google and getting a list of URLs of closed restaurants listed on Yelp is in the file [GoogleSearchResults.ipynb](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/GoogleSearchResults.ipynb). The list of URLs was exported to [yelp_closed_biz.txt](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/yelp_closed_biz.txt)
+
+Second step was to scrape the data from each URL and find required data fields. Each URL had reviews running too multiple pages. We scrapped first 3 pages of reviews - around 60 reviews per URL(restaurant). The code for scrapping the data for restaurants is in the file [YelpReviews.ipnyb](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/YelpReviews.ipynb). The final data was exported to [yelp_review_analysis.csv](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/yelp_review_analysis.csv) 
+
+Third step was to carry out analysis on acquired data. The code and charts below help us find out if our assumptions hold true or not.
+
 
 ```python
+#importing dependencies
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +34,7 @@ import seaborn as sns
 
 
 ```python
+# putting the data retrieved in step2 into a dataframe
 yelp_df = pd.read_csv('yelp_review_analysis.csv',encoding='iso-8859-1')
 yelp_df.head()
 ```
@@ -18,6 +43,19 @@ yelp_df.head()
 
 
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -173,77 +211,44 @@ yelp_df.head()
 
 
 
+### Charts and Analysis
+
 
 ```python
-len(yelp_df[yelp_df['compound'] > 0])
+# number of restraunts having reviews out of total restraunt population
+fig = plt.figure(figsize=(8, 8))
+explode = (0.15,0)
+portions = [len(yelp_df[yelp_df['num_reviews']>0]), len(yelp_df[yelp_df['num_reviews']<1])]
+colors = ['#f29232', '#b7b6b5']
+labels = ['Rest_w/reviews', 'Rest_w/o reviews']
+plt.pie(portions, explode = explode,labels=labels, autopct='%1.1f%%', shadow=True, colors = colors)
+plt.axis('equal')
+plt.title('% of Restaurants With Or Without Reviews', fontsize = 16)
+plt.show()
 ```
 
 
-
-
-    271
-
+![png](output_6_0.png)
 
 
 
 ```python
-len(yelp_df[yelp_df['rating'] == 4.0])
-```
+## Restaurants rating distribution - what % of restaurants have what ratings
 
+def my_autopct(pct):
+    return ('%.1f%%' % pct) if pct >= 2 else ''
 
+fig = plt.figure(figsize=(8,8))
+explode= (0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,)
+portions = yelp_df.groupby('rating')['rating'].count()
+colors = ["#c0c0e0","#ece7f2","#d0d1e6","#a6bddb","#74a9cf","#3690c0","#0570b0","#045a8d","#023858", "#606080","#404060", "#604060"]
+labels = portions.index
+plt.pie(portions, colors=colors, labels=labels, startangle=45,explode=explode,counterclock=False, radius=1.2,labeldistance=1.10, autopct=my_autopct)
+porcent = 100.*portions/portions.sum()
 
-
-    69
-
-
-
-
-```python
-len(yelp_df[yelp_df['num_reviews']>0])
-```
-
-
-
-
-    277
-
-
-
-
-```python
-max(yelp_df['negative'])
-```
-
-
-
-
-    0.21079999999999999
-
-
-
-
-```python
-min(yelp_df['negative'])
-```
-
-
-
-
-    0.0
-
-
-
-
-```python
-fig = plt.figure()
-
-#scatter plot1 compound score vs. yelp restaurant rating
-
-plt.scatter(yelp_df['compound'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color="#4286f4")
-plt.xlabel('Avgerage Compound Score')
-plt.ylabel('Rating')
-plt.title('Vader Compound Score vs. Yelp Rating')
-sns.set()
+plt.axis('equal')
+plt.title('Rating Distribution', y=1.05, fontsize = 16, color='black')
+fig.tight_layout()
 plt.show()
 ```
 
@@ -251,31 +256,20 @@ plt.show()
 ![png](output_7_0.png)
 
 
-
-```python
-
-#scatter plot2 negative score vs. yelp restaurant rating
-
-plt.scatter(yelp_df['negative'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color="#4fa355")
-plt.xlabel('Average Negative Score')
-plt.ylabel('Rating')
-plt.title('Vader Positive Score vs. Yelp Rating')
-sns.set()
-plt.show()
-```
-
-
-![png](output_8_0.png)
-
+### Scatter plots
+The scatter plots below use average sentiment scores calculated as follows:
+- Paragraph value = Average Vader Sentiment score of sentences in a paragraph
+- Review value = Average of Vader Sentiment score of paragraphs in a review
+- Restaurant value = Average of Vader Sentiment score of all reviews for a restaurant
 
 
 ```python
-#scatter plot3 positive score vs. yelp restaurant rating
-
-plt.scatter(yelp_df['positive'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color="#8654a3")
-plt.xlabel('Average Positive Score')
-plt.ylabel('Rating')
-plt.title('Vader Positive Score vs. Yelp Rating')
+#scatter plot 1: compound score vs. yelp restaurant rating
+fig = plt.figure()
+plt.scatter(yelp_df['compound'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color="#4286f4")
+plt.xlabel('Average Compound Score', fontsize = 14)
+plt.ylabel('Yelp Rating', fontsize = 14)
+plt.title('Vader Compound Score vs. Yelp Rating', fontsize = 16, color='black')
 sns.set()
 plt.show()
 ```
@@ -286,14 +280,13 @@ plt.show()
 
 
 ```python
-## number of restrau having reviews out of total restraunt population
-fig = plt.figure(figsize=(8, 8))
-portions = [len(yelp_df[yelp_df['num_reviews']>0]), len(yelp_df[yelp_df['num_reviews']<1])]
-colors = ['#f29232', '#b7b6b5']
-labels = ['Rest_w/reviews', 'Rest_w/o reviews']
-plt.pie(portions, labels=labels, autopct='%1.1f%%', shadow=True, colors = colors)
-plt.axis('equal')
-plt.title('Percent of Restaurants with Reviews')
+#scatter plot 2: negative score vs. yelp restaurant rating
+
+plt.scatter(yelp_df['negative'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color="#4fa355")
+plt.xlabel('Average Negative Score',fontsize = 14)
+plt.ylabel('Yelp Rating', fontsize = 14)
+plt.title('Vader Negative Score vs. Yelp Rating', fontsize = 16, color = 'black')
+sns.set()
 plt.show()
 ```
 
@@ -303,21 +296,13 @@ plt.show()
 
 
 ```python
-## Restaunts rating distribution
+#scatter plot 3: positive score vs. yelp restaurant rating
 
-def my_autopct(pct):
-    return ('%.2f%%' % pct) if pct >= 5 else ''
-
-fig = plt.figure(figsize=(8, 8))
-portions = yelp_df.groupby('rating')['rating'].count()
-colors = ["#c0c0e0","#ece7f2","#d0d1e6","#a6bddb","#74a9cf","#3690c0","#0570b0","#045a8d","#023858", "#606080","#404060", "#604060"]
-labels = portions.index
-plt.pie(portions, colors=colors, labels=labels, startangle=90, radius=1.2, autopct=my_autopct)
-porcent = 100.*portions/portions.sum()
-
-plt.axis('equal')
-plt.title('Restaurants with Reviews by Yelp Rating', y=1.05)
-fig.tight_layout()
+plt.scatter(yelp_df['positive'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color="#8654a3")
+plt.xlabel('Average Positive Score', fontsize = 14)
+plt.ylabel('Yelp Rating', fontsize = 14)
+plt.title('Vader Positive Score vs. Yelp Rating',fontsize = 16, color = 'black')
+sns.set()
 plt.show()
 ```
 
@@ -325,30 +310,19 @@ plt.show()
 ![png](output_11_0.png)
 
 
+### Scatter plots by sentences Vader Sentiment score
 
-```python
-# compound_by_sent vs  median compound score
-plt.figure()
+Since, we were not able to find any correlation or trend in the scatter plots above, we decided to see if getting rid of average of averages would help us find something interesting in the data. So, we came up with Restaurant value:
 
-plt.scatter(yelp_df['compound_by_sent'], yelp_df['median_cmpd'], s=100, linewidths=2, alpha=0.75, color='#f1cb31', marker="^")
-plt.xlabel('Average Compound Score')
-plt.ylabel('Median Compound Score')
-plt.title('Vader Score by Sentence Per Restaurant\n Avg. Compound Score vs. Median Compound Score')
-sns.set()
-plt.show()
-```
-
-
-![png](output_12_0.png)
-
+Restaurant value = Average of Vader Sentiment score of all the sentences from all the reviews
 
 
 ```python
-# compound_by_sent vs ratings
+# scatter plot 4: compound score by sentence vs yelp rating
 plt.scatter(yelp_df['compound_by_sent'], yelp_df['rating'], s=100, linewidths=2, alpha=0.75, color='#4286f4', marker="^")
-plt.xlabel('Average Compound Score')
-plt.ylabel('Yelp Rating')
-plt.title('Vader Score by Sentence Per Restaurant\n Avg. Compound Score vs. Yelp Rating')
+plt.xlabel('Average Compound Score', fontsize = 14)
+plt.ylabel('Yelp Rating', fontsize = 14)
+plt.title('Vader Score By Sentence\n Avg. Compound Score vs. Yelp Rating',fontsize = 16, color = 'black')
 sns.set()
 plt.show()
 ```
@@ -359,11 +333,11 @@ plt.show()
 
 
 ```python
-#negative score by sentence vs number of reviews
+# scatter plot 5: negative score by sentence vs number of reviews
 plt.scatter(yelp_df['negative_by_sent'], yelp_df['num_reviews'], s=100, linewidths=2, alpha=0.75, color='#4fa355', marker="^")
-plt.xlabel('Average Negative Score')
-plt.ylabel('Number of Yelp Ratings')
-plt.title('Vader Score by Sentence Per Restaurant\n Avg. Negative Score vs. Number of Yelp Ratings')
+plt.xlabel('Average Negative Score', fontsize = 14)
+plt.ylabel('Number of Yelp Ratings', fontsize = 14)
+plt.title('Vader Score By Sentence\n Avg. Negative Score vs. Number of Yelp Ratings',fontsize = 16, color = 'black')
 sns.set()
 plt.show()
 # does not matter the number of reviews, the negative scorer for most restaurants ranges frm 0-0.10
@@ -373,26 +347,66 @@ plt.show()
 ![png](output_14_0.png)
 
 
+### Miscellaneous Scatter Plots
+
 
 ```python
-#calculating correlation between negative score and number of reviews
-corr = numpy.corrcoef(yelp_df['negative_by_sent'], yelp_df['num_reviews'])[0,1]
-corr
+#scatter plot 6: compound score by sentence vs  median compound score by sentence
+plt.figure()
+
+plt.scatter(yelp_df['compound_by_sent'], yelp_df['median_cmpd'], s=100, linewidths=2, alpha=0.75, color='#f1cb31', marker="^")
+plt.xlabel('Average Compound Score', fontsize = 14)
+plt.ylabel('Median Compound Score', fontsize = 14)
+plt.title('Vader Score By Sentence\n Avg. Compound Score vs. Median Compound Score',fontsize = 16, color = 'black')
+sns.set()
+plt.show()
 ```
 
 
-
-
-    0.036960579892247603
-
+![png](output_16_0.png)
 
 
 
 ```python
-#calculating correlation and p-value
+# scatter plot 7 : Max positive vader Score by sentence vs num of reviews 
+# To see if numb of reviews are less, it skews the sentiment scores
+plt.scatter(yelp_df['range_pos_max'], yelp_df['num_reviews'],  s=100, linewidths=2, alpha=0.75, color='#40b5b7', marker='s')
+plt.xlabel('Max Vader Positive Score', fontsize = 14)
+plt.ylabel('Number of Yelp Reviews', fontsize = 14)
+plt.title('Max Vader Positive Score vs. Number of Yelp Reviews',fontsize = 16, color = 'black')
+sns.set()
+plt.show()
+# The graph below shows that, the fewer the reviews (less than 100), the lower the max positive sentiment score
+```
+
+
+![png](output_17_0.png)
+
+
+
+```python
+# scatter plot 8: positive score by sentence vs ratings
+plt.scatter( yelp_df['positive_by_sent'], yelp_df['rating'],  s=100, linewidths=2, alpha=0.75, color='#d385ce', marker='s')
+plt.ylabel('Yelp Rating', fontsize = 14)
+plt.xlabel('Avg Positive Score', fontsize = 14)
+plt.title('Vader Positive Score vs. Yelp Rating',fontsize = 16, color = 'black')
+sns.set()
+plt.show()
+#the chart below shows that even though restaurants have low positive score it does not affect the rating
+```
+
+
+![png](output_18_0.png)
+
+
+### Statistical Inference
+
+
+```python
+#calculating correlation and p-value for negative score by sentence and number of reviews
 negscore_corr = stats.pearsonr(yelp_df['negative_by_sent'], yelp_df['num_reviews'])
 negscore_corr
-#the output above suggests - the correlation between negative score and number of reviews of restaurant is only 0.03 which means there is no strong correlation. To top that, the -pvalue is 0.52 ( pvalue>0.5) which means correlation is not significant
+
 ```
 
 
@@ -402,31 +416,13 @@ negscore_corr
 
 
 
-
-```python
-#pos_range_max vs num of reviews --> to see if numb of reviews are less, it skews the sentiment scores
-plt.scatter(yelp_df['range_pos_max'], yelp_df['num_reviews'],  s=100, linewidths=2, alpha=0.75, color='#40b5b7', marker='s')
-plt.xlabel('Max Vader Positive Score')
-plt.ylabel('Number of Yelp Reviews')
-plt.title('Max Vader Positive Score vs. Number of Yelp Reviews')
-sns.set()
-plt.show()
-#the graph below shows that lesser the reviews (less than 100) have less max pos_score (<1)
-## not important inference
-```
-
-
-![png](output_17_0.png)
-
+The output above suggests - The correlation between negative score and number of reviews of restaurants is only 0.03 which means there is no strong correlation. To top that, the p-value is 0.52 (p-value>0.5) which means correlation is not significant
 
 
 ```python
-#calculating pearson correlation
+#calculating pearson correlation and  p-value for max positive score by sentence and number of reviews
 maxpos_corr = stats.pearsonr(yelp_df['range_pos_max'], yelp_df['num_reviews'])
 maxpos_corr
-
-# the low p-value suggests that thre is high probabilty data represents hypothesis, 
-#but since correlatin value is too low, only 0.39, its a positive but not so strong correlation.
 ```
 
 
@@ -436,31 +432,13 @@ maxpos_corr
 
 
 
-
-```python
-#pos_by_sent vs ratings
-plt.scatter( yelp_df['rating'], yelp_df['positive_by_sent'],  s=100, linewidths=2, alpha=0.75, color='#d385ce', marker='s')
-plt.xlabel('Yelp Rating')
-plt.ylabel('Avg Positive Score')
-plt.title('Vader Positive Score vs. Yelp Rating')
-sns.set()
-plt.show()
-#the chart below shows that even though restrs have low positive score it does not affect the ratings
-```
-
-
-![png](output_19_0.png)
-
+The output above suggests that correlation is not so strong as correlation coefficient is only 0.39. Since the p-value is too low (p-value < 0.01), it suggests that there is high probabilty the data represents the population.
 
 
 ```python
-#calculating pearson correlation
+#calculating pearson correlation and p-value for positive score by sentence and rating
 pos_corr = stats.pearsonr(yelp_df['positive_by_sent'], yelp_df['rating'])
 pos_corr
-
-#there is a high correlation between positive score and ratings of a restaurant.
-#also p-value is <0.1, which shows the relation is highly significant
-#this means -  positive review score can help build the good ratings(stars) for a restraurant
 ```
 
 
@@ -470,16 +448,13 @@ pos_corr
 
 
 
+The output above suggests that there is a high correlation between the positive score and restaurant ratings. Also the p-value is < 0.01 which proves the relationship is highly significant. This means higher positive review score can help build a higher Yelp rating (stars) for a restraurant
+
 
 ```python
-#calculating pearson correlation
+#calculating pearson correlation and p-value for negative score by sentence and rating
 neg_corr = stats.pearsonr(yelp_df['negative_by_sent'], yelp_df['rating'])
-neg_corr1 = np.corrcoef(yelp_df['negative_by_sent'], yelp_df['rating'])[-1,0]
 neg_corr
-
-# there is no high correlation between negative score of reviews and restraurant ratings.just positive 0.31
-#the relation is significant as p-value is <0.1, but correlation is not so strong. 
-#this does not prove negative review score and restraunt rating means high/low restraunt ratings
 ```
 
 
@@ -489,20 +464,29 @@ neg_corr
 
 
 
+The output above suggests that there is a low correlation between the negative score and restaurant rating. Also the p-value is < 0.01 which proves the relationship is highly significant, but correlation is not so strong. This does not prove that a higher negative score means a lower Yelp rating (stars) for a restaurant.
+
 
 ```python
-#calculating pearson correlation
+#calculating pearson correlation and p-value for number of reviews and rating
 reviews_corr = stats.pearsonr(yelp_df['num_reviews'], yelp_df['rating'])
-reviews_corr1 = np.corrcoef(yelp_df['num_reviews'], yelp_df['rating'])[-1,0]
-reviews_corr1
+reviews_corr
 ```
 
 
 
 
-    0.22358315662138933
+    (0.22358315662138931, 9.3849454881529676e-05)
 
 
+
+The output above suggests that there is a low correlation between the number of reviews and restaurant rating. Also the p-value is < 0.01 which proves the relationship is highly significant, but correlation is not so strong. This does not prove that higher number of reviews means a higher Yelp rating (stars) for a restaurant.
+
+### Conclusion
+There is no strong correlation between low yelp ratings and closed restaurants
+There is no strong correlation between high Vader Sentiment negative score and closed restaurants
+
+Negative reviews do not contribute to restaurants closing!
 
 
 ```python
