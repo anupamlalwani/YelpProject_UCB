@@ -1,7 +1,7 @@
 
 ### Yelp Review Analysis by Angela Shane and Anupam Lalwani
 
-#### Analysis topic:
+### Analysis topic:
 What is the correlation between Yelp reviews and closed restaurants?
 
 Assumptions:
@@ -9,6 +9,8 @@ Assumptions:
 The general assumption before looking at data were:
 - High correlation between closed restraunts and low ratings
 - High negative vader Sentiment score for restraunt reviews
+
+Slide Show: [Yelp Review Analysis] (https://docs.google.com/presentation/d/13PdJCJvRKs6dovB8Y5G1EEI5mUDfs5LkcF1p_Xe6uMc/edit?usp=sharing)
 
 ### Data Retrieval:
 
