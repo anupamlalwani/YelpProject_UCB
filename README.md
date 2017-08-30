@@ -1,16 +1,14 @@
 
 ### Yelp Review Analysis by Angela Shane and Anupam Lalwani
 
-### Analysis topic:
+#### Analysis topic:
 What is the correlation between Yelp reviews and closed restaurants?
 
 Assumptions:
 
 The general assumption before looking at data were:
-- High correlation between closed restraunts and low ratings
-- High negative vader Sentiment score for restraunt reviews
-
-Slide Show: [Yelp Review Analysis](https://docs.google.com/presentation/d/13PdJCJvRKs6dovB8Y5G1EEI5mUDfs5LkcF1p_Xe6uMc/edit?usp=sharing)
+- High correlation between closed restaurants and low ratings
+- High negative vader Sentiment score for restaurant reviews
 
 ### Data Retrieval:
 
@@ -45,6 +43,19 @@ yelp_df.head()
 
 
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -204,7 +215,7 @@ yelp_df.head()
 
 
 ```python
-# number of restraunts having reviews out of total restraunt population
+# number of restaurants having reviews out of total restaurant population
 fig = plt.figure(figsize=(8, 8))
 explode = (0.15,0)
 portions = [len(yelp_df[yelp_df['num_reviews']>0]), len(yelp_df[yelp_df['num_reviews']<1])]
@@ -437,7 +448,7 @@ pos_corr
 
 
 
-The output above suggests that there is a high correlation between the positive score and restaurant ratings. Also the p-value is < 0.01 which proves the relationship is highly significant. This means higher positive review score can help build a higher Yelp rating (stars) for a restraurant
+The output above suggests that there is a high correlation between the positive score and restaurant ratings. Also the p-value is < 0.01 which proves the relationship is highly significant. This means higher positive review score can help build a higher Yelp rating (stars) for a restaurant
 
 
 ```python
@@ -476,8 +487,3 @@ There is no strong correlation between low yelp ratings and closed restaurants
 There is no strong correlation between high Vader Sentiment negative score and closed restaurants
 
 Negative reviews do not contribute to restaurants closing!
-
-
-```python
-
-```
