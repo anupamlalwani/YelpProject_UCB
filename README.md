@@ -8,6 +8,8 @@ Assumptions before looking at the data:
 - High correlation between closed restaurants and low ratings
 - High negative vader Sentiment score for restaurant reviews
 
+#### Slide Share: [Yelp Review Analysis](https://docs.google.com/presentation/d/13PdJCJvRKs6dovB8Y5G1EEI5mUDfs5LkcF1p_Xe6uMc/edit?usp=sharing)
+
 ### Data Retrieval:
 
 Yelp supports developers and students trying to do research on Yelp data with Yelp Fusion API. However, Yelp has put limits to the number of restaurants and reviews one can pull from its API.
@@ -41,19 +43,6 @@ yelp_df.head()
 
 
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
