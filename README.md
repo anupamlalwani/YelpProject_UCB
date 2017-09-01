@@ -245,8 +245,7 @@ plt.show()
 
 ### Scatter plots
 The scatter plots below use average sentiment scores calculated as follows:
-- Paragraph value = Average Vader Sentiment score of sentences in a paragraph
-- Review value = Average of Vader Sentiment score of paragraphs in a review
+- Review value = Average of Vader Sentiment score of sentences in a review
 - Restaurant value = Average of Vader Sentiment score of all reviews for a restaurant
 
 
