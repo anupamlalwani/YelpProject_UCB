@@ -1,26 +1,24 @@
 
 ### Yelp Review Analysis by Angela Shane and Anupam Lalwani
 
-#### Analysis topic:
-What is the correlation between Yelp reviews and closed restaurants?
+### Analysis topic:
+Negative Yelp reviews can cause restaurants to close.
 
-Assumptions:
-
-The general assumption before looking at data were:
+Assumptions before looking at the data:
 - High correlation between closed restaurants and low ratings
 - High negative vader Sentiment score for restaurant reviews
 
 ### Data Retrieval:
 
-Yelp supports developers and students trying to do research on Yelp data with Yelp Fusion API. However, the Yelp has put limits to number of restaurants and reviews one can pull from its API.
+Yelp supports developers and students trying to do research on Yelp data with Yelp Fusion API. However, Yelp has put limits to the number of restaurants and reviews one can pull from its API.
 
-We had to take longer route and retrieve data using data scrapping. 
+We had to take a different route and retrieve data using data scrapping. 
 
 The first step was to get URLs of closed restaurants listed on Yelp. The code for scrapping the data from google and getting a list of URLs of closed restaurants listed on Yelp is in the file [GoogleSearchResults.ipynb](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/GoogleSearchResults.ipynb). The list of URLs was exported to [yelp_closed_biz.txt](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/yelp_closed_biz.txt)
 
-Second step was to scrape the data from each URL and find required data fields. Each URL had reviews running too multiple pages. We scrapped first 3 pages of reviews - around 60 reviews per URL(restaurant). The code for scrapping the data for restaurants is in the file [YelpReviews.ipnyb](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/YelpReviews.ipynb). The final data was exported to [yelp_review_analysis.csv](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/yelp_review_analysis.csv) 
+The second step was to scrape the Yelp reviews from each restaurant URL.  A restaurant can have many reviews spanning multiple pages.  We limited our data scraping to the first 3 pages of each restaurant, which is approximately 60 reviews per restaurant. The code for scrapping the data for restaurants is in the file [YelpReviews.ipnyb](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/YelpReviews.ipynb). The final data was exported to [yelp_review_analysis.csv](https://github.com/anupamlalwani/YelpProject_UCB/blob/master/yelp_review_analysis.csv) 
 
-Third step was to carry out analysis on acquired data. The code and charts below help us find out if our assumptions hold true or not.
+The third step was to carry out analysis on acquired data. The code and charts below help us find out if our assumptions hold true or not.
 
 
 ```python
@@ -483,7 +481,23 @@ reviews_corr
 The output above suggests that there is a low correlation between the number of reviews and restaurant rating. Also the p-value is < 0.01 which proves the relationship is highly significant, but correlation is not so strong. This does not prove that higher number of reviews means a higher Yelp rating (stars) for a restaurant.
 
 ### Conclusion
-There is no strong correlation between low yelp ratings and closed restaurants
-There is no strong correlation between high Vader Sentiment negative score and closed restaurants
-
 Negative reviews do not contribute to restaurants closing!
+- There is no strong correlation between low Yelp ratings and closed restaurants.
+- There is no strong correlation between high Vader Sentiment negative score and closed restaurants.
+
+
+
+### Contributors
+- Anupam Lalwani [GitHub](https://github.com/anupamlalwani)
+- Angela Shane [GitHub](https://github.com/shanegela)
+
+### Technologies
+- Python
+    - BeautifulSoup
+    - Pandas
+    - Vader Sentiment
+    - Natural Language Toolkit
+    - Numpy
+    - Matplotlib
+    - Seaborn
+    - SciPy
